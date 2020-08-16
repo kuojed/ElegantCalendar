@@ -31,10 +31,6 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
                 .padding(.leading, CalendarConstants.Monthly.outerHorizontalPadding)
                 .onTapGesture { self.communicator?.showYearlyView() }
             weeksViewWithDaysOfWeekHeader
-            
-            Rectangle()
-                .foregroundColor(Color(red: 0.8, green: 0.8, blue: 0.8, opacity: 0))
-                .frame(width: 350, height: 40)
                 
             if selectedDate != nil {
                 calenderAccessoryView
