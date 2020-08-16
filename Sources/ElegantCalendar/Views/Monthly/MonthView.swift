@@ -5,13 +5,13 @@ import SwiftUI
 fileprivate let daysOfWeekInitials = ["日", "一", "二", "三", "四", "五", "六"]
 
 struct MonthView: View, MonthlyCalendarManagerDirectAccess {
-
+    
     @Environment(\.calendarTheme) var theme: CalendarTheme
-
+    
     @ObservedObject var calendarManager: MonthlyCalendarManager
-
+    
     let month: Date
-
+    
     private var weeks: [Date] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: month) else {
             return []
@@ -20,17 +20,22 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
             inside: monthInterval,
             matching: calendar.firstDayOfEveryWeek)
     }
-
+    
     private var isWithinSameMonthAndYearAsToday: Bool {
         calendar.isDate(month, equalTo: Date(), toGranularities: [.month, .year])
     }
-
+    
     var body: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 30) {
             monthYearHeader
                 .padding(.leading, CalendarConstants.Monthly.outerHorizontalPadding)
                 .onTapGesture { self.communicator?.showYearlyView() }
             weeksViewWithDaysOfWeekHeader
+            
+            Rectangle()
+                .foregroundColor(Color(red: 0.8, green: 0.8, blue: 0.8, opacity: 0))
+                .frame(width: 350, height: 40)
+                
             if selectedDate != nil {
                 calenderAccessoryView
                     .padding(.leading, CalendarConstants.Monthly.outerHorizontalPadding)
@@ -41,48 +46,54 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
         .padding(.top, CalendarConstants.Monthly.topPadding)
         .frame(width: CalendarConstants.Monthly.cellWidth, height: CalendarConstants.cellHeight)
     }
-
+    
 }
 
 private extension MonthView {
-
+    
     var monthYearHeader: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                monthText
-                yearText
-            }
+        //        HStack {
+        //            VStack(alignment: .leading) {
+        //                monthText
+        //                yearText
+        //            }
+        //            Spacer()
+        //        }
+        
+        HStack(alignment: .bottom) {
+            monthText
+            yearText
             Spacer()
         }
     }
-
+    
     var monthText: some View {
         Text(month.fullMonth.uppercased())
             .font(.system(size: 26))
             .bold()
-            .tracking(7)
+            .tracking(2)
             .foregroundColor(isWithinSameMonthAndYearAsToday ? theme.primary : .primary)
     }
-
+    
     var yearText: some View {
         Text(month.year)
-            .font(.system(size: 12))
+            .font(.system(size: 22))
             .tracking(2)
             .foregroundColor(isWithinSameMonthAndYearAsToday ? theme.primary : .gray)
             .opacity(0.95)
     }
-
+    
 }
 
 private extension MonthView {
-
+    
     var weeksViewWithDaysOfWeekHeader: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 22) {
             daysOfWeekHeader
             weeksViewStack
         }
     }
-
+    
     var daysOfWeekHeader: some View {
         HStack(spacing: CalendarConstants.Monthly.gridSpacing) {
             ForEach(daysOfWeekInitials, id: \.self) { dayOfWeek in
@@ -93,7 +104,7 @@ private extension MonthView {
             }
         }
     }
-
+    
     var weeksViewStack: some View {
         VStack(spacing: CalendarConstants.Monthly.gridSpacing) {
             ForEach(weeks, id: \.self) { week in
@@ -101,36 +112,36 @@ private extension MonthView {
             }
         }
     }
-
+    
 }
 
 private extension MonthView {
-
+    
     var calenderAccessoryView: some View {
         CalendarAccessoryView(calendarManager: calendarManager)
     }
-
+    
 }
 
 private struct CalendarAccessoryView: View, MonthlyCalendarManagerDirectAccess {
-
+    
     let calendarManager: MonthlyCalendarManager
-
+    
     @State private var isVisible = false
-
+    
     private var numberOfDaysFromTodayToSelectedDate: Int {
         let startOfToday = calendar.startOfDay(for: Date())
         let startOfSelectedDate = calendar.startOfDay(for: selectedDate!)
         return calendar.dateComponents([.day], from: startOfToday, to: startOfSelectedDate).day!
     }
-
+    
     private var isNotYesterdayTodayOrTomorrow: Bool {
         abs(numberOfDaysFromTodayToSelectedDate) > 1
     }
-
+    
     var body: some View {
         VStack {
-//            selectedDayInformationView
+            //            selectedDayInformationView
             GeometryReader { geometry in
                 self.datasource?.calendar(viewForSelectedDate: self.selectedDate!,
                                           dimensions: geometry.size)
@@ -140,11 +151,11 @@ private struct CalendarAccessoryView: View, MonthlyCalendarManagerDirectAccess {
         .opacity(isVisible ? 1 : 0)
         .animation(.easeInOut(duration: 0.5))
     }
-
+    
     private func makeVisible() {
         isVisible = true
     }
-
+    
     private var selectedDayInformationView: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -156,7 +167,7 @@ private struct CalendarAccessoryView: View, MonthlyCalendarManagerDirectAccess {
             Spacer()
         }
     }
-
+    
     private var dayOfWeekWithMonthAndDayText: some View {
         let monthDayText: String
         if numberOfDaysFromTodayToSelectedDate == -1 {
@@ -168,28 +179,28 @@ private struct CalendarAccessoryView: View, MonthlyCalendarManagerDirectAccess {
         } else {
             monthDayText = selectedDate!.dayOfWeekWithMonthAndDay
         }
-
+        
         return Text(monthDayText.uppercased())
             .font(.subheadline)
             .bold()
     }
-
+    
     private var daysFromTodayText: some View {
         let isBeforeToday = numberOfDaysFromTodayToSelectedDate < 0
         let daysDescription = isBeforeToday ? "DAYS AGO" : "DAYS FROM TODAY"
-
+        
         return Text("\(abs(numberOfDaysFromTodayToSelectedDate)) \(daysDescription)")
             .font(.system(size: 10))
             .foregroundColor(.gray)
     }
-
+    
 }
 
 struct MonthView_Previews: PreviewProvider {
     static var previews: some View {
         LightDarkThemePreview {
             MonthView(calendarManager: .mock, month: Date())
-
+            
             MonthView(calendarManager: .mock, month: .daysFromToday(45))
         }
     }
