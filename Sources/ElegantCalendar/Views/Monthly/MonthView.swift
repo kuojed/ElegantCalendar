@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-fileprivate let daysOfWeekInitials = ["S", "M", "T", "W", "T", "F", "S"]
+fileprivate let daysOfWeekInitials = ["日", "一", "二", "三", "四", "五", "六"]
 
 struct MonthView: View, MonthlyCalendarManagerDirectAccess {
 
@@ -130,7 +130,7 @@ private struct CalendarAccessoryView: View, MonthlyCalendarManagerDirectAccess {
 
     var body: some View {
         VStack {
-            selectedDayInformationView
+//            selectedDayInformationView
             GeometryReader { geometry in
                 self.datasource?.calendar(viewForSelectedDate: self.selectedDate!,
                                           dimensions: geometry.size)
