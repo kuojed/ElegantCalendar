@@ -37,7 +37,7 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
     }
     
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 20) {
             monthYearHeader
                 .padding(.leading, CalendarConstants.Monthly.outerHorizontalPadding)
                 .onTapGesture { self.communicator?.showYearlyView() }
@@ -97,7 +97,7 @@ private extension MonthView {
 private extension MonthView {
     
     var weeksViewWithDaysOfWeekHeader: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 18) {
             daysOfWeekHeader
             weeksViewStack
         }
