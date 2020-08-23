@@ -16,9 +16,20 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
         guard let monthInterval = calendar.dateInterval(of: .month, for: month) else {
             return []
         }
-        return calendar.generateDates(
-            inside: monthInterval,
-            matching: calendar.firstDayOfEveryWeek)
+        
+        var weeks = calendar.generateDates(
+        inside: monthInterval,
+        matching: calendar.firstDayOfEveryWeek)
+        
+        if weeks.count == 5 {
+            let nextSunday = Calendar.current.date(byAdding: .day, value: 7, to: weeks.last!)
+            weeks.append(nextSunday!)
+        }
+        return weeks
+        
+//        return calendar.generateDates(
+//            inside: monthInterval,
+//            matching: calendar.firstDayOfEveryWeek)
     }
     
     private var isWithinSameMonthAndYearAsToday: Bool {
@@ -31,6 +42,8 @@ struct MonthView: View, MonthlyCalendarManagerDirectAccess {
                 .padding(.leading, CalendarConstants.Monthly.outerHorizontalPadding)
                 .onTapGesture { self.communicator?.showYearlyView() }
             weeksViewWithDaysOfWeekHeader
+            
+            datasource?.calendarViewForMonthData()
                 
             if selectedDate != nil {
                 calenderAccessoryView

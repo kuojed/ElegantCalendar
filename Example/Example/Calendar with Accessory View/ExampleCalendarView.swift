@@ -48,6 +48,10 @@ struct ExampleCalendarView: View {
 }
 
 extension ExampleCalendarView: ElegantCalendarDataSource {
+    
+    func calendarViewForMonthData() -> AnyView {
+        return Text("MonthData").erased
+    }
 
     func calendar(backgroundColorOpacityForDate date: Date) -> Double {
         let startOfDay = currentCalendar.startOfDay(for: date)
@@ -55,8 +59,13 @@ extension ExampleCalendarView: ElegantCalendarDataSource {
     }
 
     func calendar(canSelectDate date: Date) -> Bool {
-        let day = currentCalendar.dateComponents([.day], from: date).day!
-        return day != 4
+//        let day = currentCalendar.dateComponents([.day], from: date).day!
+//        return day != 4
+        
+        let month = currentCalendar.component(.month, from: date)
+        let currentMonth = currentCalendar.component(.month, from: calendarManager.currentMonth)
+
+        return currentMonth == month
     }
 
     func calendar(viewForSelectedDate date: Date, dimensions size: CGSize) -> AnyView {
